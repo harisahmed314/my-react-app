@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { auth } from "../firebase/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from "../firebase/auth";
+
 
 
 
@@ -10,19 +12,20 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const {authUser}=useAuth();
     
-    const signIn = (e) => {
+    const signIn = async (e) => {
         e.preventDefault();
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                // Handle the signed-in user here
-                const user = userCredential.user;
-                console.log(user);
-            })
-            .catch((error) => {
-                // Handle the error here
-                console.error("Error signing in:", error.message);
-            });
+        if (!email || !password) return
+        try {
+            const user = await signInWithEmailAndPassword(auth, email, password);
+            
+            
+
+        } catch (error) {
+            console.error("an error occur", error)
+
+        }
     }
     return(
         <div className="mt-4 grow flex items-center justify-around">
