@@ -1,10 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { onAuthStateChanged, signOut as authSignOut } from "firebase/auth";
-import { auth } from "./firebase";
-
-
-
-
+import { auth as firebaseAuth } from "./firebase";
 
 const AuthUserContext = createContext({
     authUser: null,
@@ -15,10 +11,10 @@ export default function useFirebaseAuth() {
     const [authUser, setAuthUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    
-    
     const signOut = () => {
-        authSignOut(auth).then(() => clear());
+        authSignOut(firebaseAuth)
+            .then(() => clear())
+            .catch(error => console.error("Error signing out:", error));
     };
 
     const authStateChanged = (user) => {
@@ -28,14 +24,11 @@ export default function useFirebaseAuth() {
     
     const clear = () => {
         setAuthUser(null);
-        setIsLoading(true); // Only if you want to set it as loading after signing out
+        setIsLoading(true);
     };
     
-
-    
-
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, authStateChanged);
+        const unsubscribe = onAuthStateChanged(firebaseAuth, authStateChanged);
         return () => unsubscribe();
     }, []);
 
@@ -43,20 +36,17 @@ export default function useFirebaseAuth() {
         authUser,
         isLoading,
         signOut,
-        setAuthUser,
-        
+        setAuthUser, // Consider wrapping this in an action if needed
     };
 }
 
-
 export const AuthUserProvider = ({ children }) => {
-    const auth = useFirebaseAuth();
+    const authContextValues = useFirebaseAuth();
     return (
-        <AuthUserContext.Provider value={auth}>
+        <AuthUserContext.Provider value={authContextValues}>
             {children}
         </AuthUserContext.Provider>
     );
 };
 
 export const useAuth = () => useContext(AuthUserContext);
-
