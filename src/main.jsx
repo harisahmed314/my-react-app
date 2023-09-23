@@ -3,24 +3,22 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
 import { BrowserRouter } from 'react-router-dom'
-import { AuthUserProvider } from './firebase/auth.jsx'
+import { ProductsContextProvider } from './Global/productcontext.jsx'
 
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 
 
-
-  <AuthUserProvider>
-
-
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
+    <ProductsContextProvider>
+      <BrowserRouter>
+        <App />
 
-    </BrowserRouter>
+      </BrowserRouter>
+    </ProductsContextProvider>
   </React.StrictMode>
 
-  </AuthUserProvider>
+
 
 )
