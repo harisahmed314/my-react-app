@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { storage, db } from '../config/config'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc } from 'firebase/firestore';
+
 
 
 export const AddProducts = () => {
@@ -33,7 +35,7 @@ export const AddProducts = () => {
             console.log('Uploaded', snapshot.bytesTransferred, 'bytes.');
 
             getDownloadURL(storageRef).then(url => {
-                db.collection('Products').add({
+                addDoc(collection(db, 'Products'), {
                     ProductName: productName,
                     Detail: detail,
                     ProductPrice: Number(productPrice),
@@ -41,7 +43,7 @@ export const AddProducts = () => {
                 }).then(() => {
                     setProductName('');
                     setDetail('');
-                    setProductPrice(0)
+                    setProductPrice(0);
                     setProductImg('');
                     setError('');
                     document.getElementById('file').value = '';
@@ -49,6 +51,7 @@ export const AddProducts = () => {
             });
         }).catch(err => setError(err.message));
     }
+
 
     return (
         <div className="container mx-auto px-6 py-12">
