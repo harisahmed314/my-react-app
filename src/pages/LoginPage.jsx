@@ -1,40 +1,42 @@
-import React, { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { auth } from "../firebase/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { useAuth } from "../firebase/auth";
+import React, { useState } from 'react'
+import { auth } from '../config/config'
+import { Link } from 'react-router-dom'
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { useNavigate } from 'react-router-dom';
 
-export default function LoginPage() {
+
+
+const LoginPage = (props) => {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { authUser } = useAuth();
-    const [redirectTo, setRedirectTo] = useState(false);
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-    const signIn = async (e) => {
+
+    const login = (e) => {
         e.preventDefault();
-        if (!email || !password) return;
-        await signInWithEmailAndPassword(auth, email, password);
-        if (authUser) {
-            setRedirectTo(true);
-        }
-    }
-
-    if (redirectTo) {
-        return <Navigate to="/account" />;
+        signInWithEmailAndPassword(auth, email, password).then(() => {
+            setEmail('');
+            setPassword('');
+            setError('');
+            navigate('/');  // Notice it's "navigate", not "push"
+        }).catch(err => setError(err.message));
     }
 
     return (
         <div className="mt-4 grow flex items-center justify-around">
             <div className="mb-64">
-                <h1 className="text-4xl  text-center mb-4">Login</h1>
-                <form onSubmit={signIn} className="max-w-md mx-auto">
-                    <input 
+                <h1 className="text-4xl text-center mb-4">Login</h1>
+                {error && <p className="text-red-500 text-center">{error}</p>} {/* Display error if it exists */}
+                <form onSubmit={login} className="max-w-md mx-auto">
+                    <input
                         type="email"
                         placeholder="your@email.com"
                         value={email}
                         onChange={ev => setEmail(ev.target.value)}
                     />
-                    <input 
+                    <input
                         type="password"
                         placeholder="password"
                         value={password}
@@ -49,3 +51,5 @@ export default function LoginPage() {
         </div>
     );
 }
+
+export default LoginPage;

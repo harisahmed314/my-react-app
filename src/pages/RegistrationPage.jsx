@@ -1,42 +1,39 @@
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import React, { useState, useEffect } from "react"
-import { Link, Navigate } from "react-router-dom"; // import Navigate
-import { auth } from "../firebase/firebase";
-import { useAuth } from "../firebase/auth"; // import useAuth hook
+import React, { useState } from 'react'
+import { auth, db } from '../config/config'
+import { Link } from 'react-router-dom'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 
-export default function RegistrationPage() {
+
+const  RegistrationPage=(props) => {
+
+    // defining state
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { authUser } = useAuth(); // get authUser from useAuth
-    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const [error, setError] = useState('');
 
-    useEffect(() => {
-        if (authUser) {
-            setShouldRedirect(true);
-        }
-    }, [authUser]);
-
-    const signUp = (e) => {
+    // signup
+    const signup = (e) => {
         e.preventDefault();
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log(user);
-            })
-            .catch((error) => {
-                console.error("Error signing in:", error.message);
-            });
-    }
-
-    if (shouldRedirect) {
-        return <Navigate to="/" replace />;
+        createUserWithEmailAndPassword(auth,email, password).then((cred) => {
+            db.collection('SignedUpUsersData').doc(cred.user.uid).set({
+                Name: name,
+                Email: email,
+                Password: password
+            }).then(() => {
+                setName('');
+                setEmail('');
+                setPassword('');
+                setError('');
+                props.history.push('/login');
+            }).catch(err => setError(err.message));
+        }).catch(err => setError(err.message));
     }
     return (
         <div className="mt-4 grow flex items-center justify-around">
             <div className="mb-64">
                 <h1 className="text-4xl  text-center mb-4">Register</h1>
-                <form className="max-w-md mx-auto" onSubmit={signUp} >
+                <form className="max-w-md mx-auto" onSubmit={signup} >
                     <input type="text"
                         placeholder="John Doe"
                         value={name}
@@ -54,6 +51,7 @@ export default function RegistrationPage() {
                         onChange={ev => setPassword(ev.target.value)}
                     />
                     <button type="submit" className="primary">Register</button>
+                    {error && <span className='error-msg'>{error}</span>}
                     <div className="text-center py-2 text-gray-500">
                         Already a member? <Link className="underline text-black" >Login</Link>
                     </div>
@@ -63,3 +61,6 @@ export default function RegistrationPage() {
 
     )
 }
+
+
+export default RegistrationPage;
