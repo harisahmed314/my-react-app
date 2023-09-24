@@ -34,16 +34,25 @@ export class App extends Component {
       }
     });
   }
-
   async getUserInfo(uid) {
-    const userRef = doc(db, 'SignedUpUsersData', uid);
-    const userSnapshot = await getDoc(userRef);
-    if (userSnapshot.exists()) {
-      this.setState({
-        user: userSnapshot.data().Name
-      });
+    console.log("Getting user info for UID:", uid);
+    try {
+      const userRef = doc(db, 'SignedUpUsersData', uid);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        this.setState({
+          user: userSnapshot.data().Name
+        });
+        console.log("User info fetched:", userSnapshot.data());
+      } else {
+        console.log("No user data found for UID:", uid);
+      }
+    } catch (error) {
+      console.error("Error fetching user data: ", error);
     }
   }
+  
+
 
 
 
@@ -56,24 +65,23 @@ export class App extends Component {
       <ProductsContextProvider>
         <BrowserRouter>
           <Routes>
-            <Route path='/' element={<Layout />}>
-
+            <Route path='/' element={<Layout user={this.state.user} />}>
               {/* home */}
-              <Route exact path='/' element={<Home user={this.state.user} />} />
+              <Route path='/' element={<Home user={this.state.user} />} />
               {/* signup */}
               <Route path="/signup" element={<RegistrationPage />} />
               {/* login */}
               <Route path="/login" element={<LoginPage />} />
               {/* cart products */}
-              {/* <Route path="/cartproducts" element={() => <Cart user={this.state.user} />} /> */}
+              {/* <Route path="/cartproducts" element={<Cart user={this.state.user} />} /> */}
               {/* add products */}
               <Route path="/addproducts" element={<AddProducts />} />
               {/* cashout */}
-              {/* <Route path='/cashout' element={() => <Cashout user={this.state.user} />} />
-                          <Route element={NotFound} /> */}
-
+              {/* <Route path='/cashout' element={<Cashout user={this.state.user} />} />
+             <Route element={NotFound} /> */}
             </Route>
           </Routes>
+
         </BrowserRouter>
       </ProductsContextProvider>
     )
