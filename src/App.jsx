@@ -11,6 +11,8 @@ import Home from './pages/Home';
 import React, { Component } from 'react';
 import { collection, doc, getDoc, getFirestore } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
+import { CartContextProvider } from './Global/CartContext';
+import { Cart } from './pages/Cart';
 
 export class App extends Component {
   state = {
@@ -40,9 +42,10 @@ export class App extends Component {
 
 
     return (
-      
 
-        <ProductsContextProvider>
+
+      <ProductsContextProvider>
+        <CartContextProvider>
           <BrowserRouter>
             <Routes>
               <Route path='/' element={<Layout user={this.state.user} />}>
@@ -50,13 +53,15 @@ export class App extends Component {
                 <Route path="/signup" element={<RegistrationPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/addproducts" element={<AddProducts />} />
+                <Route path="/cartproducts" element={<Cart  user={this.state.user}/>} />
                 {/* You can add the rest of your routes here */}
               </Route>
             </Routes>
           </BrowserRouter>
-        </ProductsContextProvider>
+        </CartContextProvider>
+      </ProductsContextProvider>
 
-      
+
     );
   }
 }
