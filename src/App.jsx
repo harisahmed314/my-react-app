@@ -1,91 +1,72 @@
-
-import './App.css'
-import { Route, Routes } from 'react-router-dom'
-import Layout from '../Layout'
-import RegistrationPage from './pages/RegistrationPage'
-import LoginPage from './pages/LoginPage'
-import { AddProducts } from './pages/AddProduct'
-import { auth, db } from './config/config'
-import { BrowserRouter } from 'react-router-dom'
-import { ProductsContextProvider } from './Global/productcontext.jsx'
-import Home from './pages/Home'
+import './App.css';
+import { Route, Routes } from 'react-router-dom';
+import Layout from '../Layout';
+import RegistrationPage from './pages/RegistrationPage';
+import LoginPage from './pages/LoginPage';
+import { AddProducts } from './pages/AddProduct';
+import { auth, db } from './config/config';
+import { BrowserRouter } from 'react-router-dom';
+import { ProductsContextProvider } from './Global/productcontext.jsx';
+import Home from './pages/Home';
 import React, { Component } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-
-
-
-
-
+import { collection, doc, getDoc, getFirestore } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export class App extends Component {
+    state = {
+        user: null,
+        error: null,
+    };
 
-  state = {
-    user: null,
-  }
-
-  componentDidMount() {
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        this.getUserInfo(user.uid);
-      } else {
-        this.setState({
-          user: null
-        })
-      }
-    });
-  }
-  async getUserInfo(uid) {
-    console.log("Getting user info for UID:", uid);
-    try {
-      const userRef = doc(db, 'SignedUpUsersData', uid);
-      const userSnapshot = await getDoc(userRef);
-      if (userSnapshot.exists()) {
-        this.setState({
-          user: userSnapshot.data().Name
+    componentDidMount() {
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                const userRef = doc(db, 'SignedUpUsersData', user.uid);
+                getDoc(userRef)
+                    .then(snapshot => {
+                        if (snapshot.exists()) {
+                            this.setState({
+                                user: snapshot.data().Name,
+                            });
+                        } else {
+                            this.setState({
+                                error: `No user data found for UID: ${user.uid}`,
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching user data:", error);
+                        this.setState({ error: "Error fetching user data." });
+                    });
+            } else {
+                this.setState({
+                    user: null,
+                });
+            }
         });
-        console.log("User info fetched:", userSnapshot.data());
-      } else {
-        console.log("No user data found for UID:", uid);
-      }
-    } catch (error) {
-      console.error("Error fetching user data: ", error);
     }
-  }
-  
 
+    render() {
+        if (this.state.error) {
+            return <div>Error: {this.state.error}</div>;
+        }
 
-
-
-
-
-
-
-  render() {
-    return (
-      <ProductsContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Layout user={this.state.user} />}>
-              {/* home */}
-              <Route path='/' element={<Home user={this.state.user} />} />
-              {/* signup */}
-              <Route path="/signup" element={<RegistrationPage />} />
-              {/* login */}
-              <Route path="/login" element={<LoginPage />} />
-              {/* cart products */}
-              {/* <Route path="/cartproducts" element={<Cart user={this.state.user} />} /> */}
-              {/* add products */}
-              <Route path="/addproducts" element={<AddProducts />} />
-              {/* cashout */}
-              {/* <Route path='/cashout' element={<Cashout user={this.state.user} />} />
-             <Route element={NotFound} /> */}
-            </Route>
-          </Routes>
-
-        </BrowserRouter>
-      </ProductsContextProvider>
-    )
-  }
+        return (
+            <ProductsContextProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path='/' element={<Layout user={this.state.user} />}>
+                            <Route path='/' element={<Home user={this.state.user} />} />
+                            <Route path="/signup" element={<RegistrationPage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/addproducts" element={<AddProducts />} />
+                            {/* You can add the rest of your routes here */}
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </ProductsContextProvider>
+        );
+    }
 }
 
-export default App
+export default App;
