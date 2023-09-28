@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from './src/Images/logo.png'
 
 
-export default function Layout({ user }){
+export default function Layout({ user }) {
 
     const navigate = useNavigate();
 
@@ -21,9 +21,11 @@ export default function Layout({ user }){
 
     return (
         <>
-            <div className="flex justify-between items-center py-4 px-6 bg-white shadow-md">
-                <div>
+            <div className="container mx-auto flex justify-between items-center py-4 px-6">
+                <div className="flex items-center space-x-4">
                     <img src={logo} alt="Logo" className="h-10 w-auto" />
+                    <Link to="/" className="text-gray-700 hover:text-gray-900">HOME</Link>
+                    <Link to="/products" className="text-gray-700 hover:text-gray-900">PRODUCTS</Link>
                 </div>
 
                 {!user ? (
