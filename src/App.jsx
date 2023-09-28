@@ -9,10 +9,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { ProductsContextProvider } from './Global/productcontext.jsx';
 import Home from './pages/Home';
 import React, { Component } from 'react';
-import { collection, doc, getDoc, getFirestore } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { CartContextProvider } from './Global/CartContext';
 import { Cart } from './pages/Cart';
+import ProductsPage from './pages/ProductPage';
+import { AddSaleProducts } from './pages/AddSaleProducts';
+import { SaleProductsContext } from './Global/saleproductcontext';
 
 export class App extends Component {
   state = {
@@ -45,20 +47,24 @@ export class App extends Component {
 
 
       <ProductsContextProvider>
-        <CartContextProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path='/' element={<Layout user={this.state.user} />}>
-                <Route path='/' element={<Home user={this.state.user} />} />
-                <Route path="/signup" element={<RegistrationPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/addproducts" element={<AddProducts />} />
-                <Route path="/cartproducts" element={<Cart  user={this.state.user}/>} />
-                {/* You can add the rest of your routes here */}
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </CartContextProvider>
+        <SaleProductsContext>
+          <CartContextProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path='/' element={<Layout user={this.state.user} />}>
+                  <Route path='/' element={<Home user={this.state.user} />} />
+                  <Route path="/signup" element={<RegistrationPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/addproducts" element={<AddProducts />} />
+                  <Route path="/cartproducts" element={<Cart user={this.state.user} />} />
+                  <Route path="/products" element={<ProductsPage />} />
+                  <Route path="/addsaleproducts" element={<AddSaleProducts />} />
+
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </CartContextProvider>
+        </SaleProductsContext>
       </ProductsContextProvider>
 
 
