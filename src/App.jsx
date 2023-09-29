@@ -14,7 +14,8 @@ import { CartContextProvider } from './Global/CartContext';
 import { Cart } from './pages/Cart';
 import ProductsPage from './pages/ProductPage';
 import { AddSaleProducts } from './pages/AddSaleProducts';
-import { SaleProductsContext } from './Global/saleproductcontext';
+import { SaleProductsContext, SaleProductsContextProvider } from './Global/saleproductcontext';
+import { SaleProducts } from './pages/SaleProducts';
 
 export class App extends Component {
   state = {
@@ -47,8 +48,8 @@ export class App extends Component {
 
 
       <ProductsContextProvider>
-        <SaleProductsContext>
-          <CartContextProvider>
+        <CartContextProvider>
+          <SaleProductsContextProvider>
             <BrowserRouter>
               <Routes>
                 <Route path='/' element={<Layout user={this.state.user} />}>
@@ -59,12 +60,13 @@ export class App extends Component {
                   <Route path="/cartproducts" element={<Cart user={this.state.user} />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/addsaleproducts" element={<AddSaleProducts />} />
+                  <Route path="/saleproducts" element={<SaleProducts />} />
 
                 </Route>
               </Routes>
             </BrowserRouter>
-          </CartContextProvider>
-        </SaleProductsContext>
+          </SaleProductsContextProvider>
+        </CartContextProvider>
       </ProductsContextProvider>
 
 

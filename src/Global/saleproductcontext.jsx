@@ -20,9 +20,9 @@ export class SaleProductsContextProvider extends React.Component {
                 if (change.type === 'added') {
                     prevSaleProducts.push({
                         ProductID: change.doc.id,
-                        ProductName: change.doc.data().ProductName,
-                        ProductPrice: change.doc.data().ProductPrice,
-                        ProductImg: change.doc.data().ProductImg,
+                        ProductName: change.doc.data().SaleProductName,
+                        ProductPrice: change.doc.data().SaleProductPrice,
+                        ProductImg: change.doc.data().SaleProductImg,
                         // Add any additional fields like discounts, etc. if you have any for sale products
                     })
                 }
@@ -35,7 +35,7 @@ export class SaleProductsContextProvider extends React.Component {
 
     render() {
         return (
-            <SaleProductsContext.Provider value={{ products: [...this.state.saleProducts] }}>
+            <SaleProductsContext.Provider value={{ saleProducts: [...this.state.saleProducts] }}>
                 {this.props.children}
             </SaleProductsContext.Provider>
         )

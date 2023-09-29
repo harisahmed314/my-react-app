@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { SaleProductsContext } from '../Global/SaleProductsContext';
+import { SaleProductsContext } from '../Global/saleproductcontext';
 import { CartContext } from '../Global/CartContext';
 
 export const SaleProducts = () => {
